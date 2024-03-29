@@ -1,4 +1,5 @@
 ARG HUMHUB_VERSION
+ARG HUMHUB_OIDC_VERSION="~0.3"
 ARG VCS_REF
 ARG BUILD_DEPS="\
     ca-certificates \
@@ -67,6 +68,7 @@ ARG RUNTIME_DEPS="\
 FROM docker.io/library/alpine:3.18.4 as builder
 
 ARG HUMHUB_VERSION
+ARG HUMHUB_OIDC_VERSION
 ARG BUILD_DEPS
 
 RUN apk add --no-cache --update $BUILD_DEPS && \
@@ -80,6 +82,7 @@ RUN tar xzf v${HUMHUB_VERSION}.tar.gz && \
     
 WORKDIR /usr/src/humhub
 
+RUN composer require worteks/humhub-auth-oidc:${HUMHUB_OIDC_VERSION}
 RUN composer config --no-plugins allow-plugins.yiisoft/yii2-composer true && \
     composer install --no-ansi --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader && \
     chmod +x protected/yii && \
