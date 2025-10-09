@@ -197,7 +197,7 @@ HUMHUB_ADVANCED_LDAP_THUMBNAIL_SYNC_PROPERTY      [thumbnailphoto]
 HUMHUB_LDAP_CACERT                                []
 ```
 
-If you want to provide a CA-certificate for server authentication (ldaps) you have to add to cert in CER format. See https://github.com/mriedmann/humhub-docker/pull/140 for details.
+If you want to provide a CA-certificate for server authentication (ldaps) you have to add to cert in CER format. See [Feat ldap ssl #140"https://github.com/mriedmann/humhub-docker/pull/140"] for details.
 
 ### PHP Config
 

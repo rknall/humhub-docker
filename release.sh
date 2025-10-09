@@ -2,8 +2,8 @@
 
 set -eo pipefail
 
-src_image_base="ghcr.io/mriedmann/humhub"
-dst_image="${1:-docker.io/mriedmann/humhub}"
+src_image_base=$1
+dst_image=$2
 variants=("allinone" "nginx" "phponly")
 
 function publish_image() {
