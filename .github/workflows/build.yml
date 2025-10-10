@@ -26,9 +26,9 @@ jobs:
           --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
           --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
           --target base \
-          -t "ghcr.io/${{ github.repository_owner }}/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-base" \
+          -t "ghcr.io/${{ github.repository_owner }}/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-base" \
           .
-        docker save "ghcr.io/${{ github.repository_owner }}/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-base" | gzip > build-${{ matrix.version }}.tar.gz
+        docker save "ghcr.io/${{ github.repository_owner }}/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-base" | gzip > build-${{ matrix.version }}.tar.gz
     - name: Upload image archive
       uses: actions/upload-artifact@v4.6.2
       with:
@@ -60,9 +60,9 @@ jobs:
           --build-arg HUMHUB_VERSION="${HUMHUB_VERSION}" \
           --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
           --target "humhub_${{ matrix.target }}" \
-          -t "ghcr.io/${{ github.repository_owner }}/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-${{ matrix.target }}" \
+          -t "ghcr.io/${{ github.repository_owner }}/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-${{ matrix.target }}" \
           .
-        docker save "ghcr.io/${{ github.repository_owner }}/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-${{ matrix.target }}" | gzip > "build-${{ matrix.version }}-${{ matrix.target }}.tar.gz"
+        docker save "ghcr.io/${{ github.repository_owner }}/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-${{ matrix.target }}" | gzip > "build-${{ matrix.version }}-${{ matrix.target }}.tar.gz"
     - name: Upload image archive
       uses: actions/upload-artifact@v4.6.2
       with:
@@ -90,7 +90,7 @@ jobs:
       run: |
         docker load --input build-${{ matrix.version }}-allinone.tar.gz
     - name: replace image
-      run: sed -i "s/docker.io\/${{ github.repository_owner }}\/humhub:latest/ghcr.io\/${{ github.repository_owner }}\/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-allinone/g" docker-compose.yml
+      run: sed -i "s/docker.io\/${{ github.repository_owner }}\/humhub:latest/ghcr.io\/${{ github.repository_owner }}\/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-allinone/g" docker-compose.yml
     - name: Spin up services
       run: docker compose -f docker-compose.yml up -d
     - name: Wait 
@@ -131,8 +131,8 @@ jobs:
         docker load --input build-${{ matrix.version }}-nginx.tar.gz
     - name: replace image
       run: |
-        sed -i "s/docker.io\/${DOCKER_IO_USER:-${{ github.repository_owner }}}\/humhub:stable-nginx/ghcr.io\/${{ github.repository_owner }}\/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-nginx/g" docker-compose.prod.yml
-        sed -i "s/docker.io\/${DOCKER_IO_USER:-${{ github.repository_owner }}}\/humhub:stable-phponly/ghcr.io\/${{ github.repository_owner }}\/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-phponly/g" docker-compose.prod.yml
+        sed -i "s/docker.io\/${DOCKER_IO_USER:-${{ github.repository_owner }}}\/humhub:stable-nginx/ghcr.io\/${{ github.repository_owner }}\/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-nginx/g" docker-compose.prod.yml
+        sed -i "s/docker.io\/${DOCKER_IO_USER:-${{ github.repository_owner }}}\/humhub:stable-phponly/ghcr.io\/${{ github.repository_owner }}\/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-phponly/g" docker-compose.prod.yml
     - name: Spin up services
       run: docker compose -f docker-compose.prod.yml up -d
     - name: Wait 
@@ -174,6 +174,6 @@ jobs:
     - name: Load, retag and Push images 
       run: |
         docker load --input build-${{ matrix.version }}-${{ matrix.target }}.tar.gz
-        docker tag "ghcr.io/${{ github.repository_owner }}/humhub:${{ github.ref_name }}-${HUMHUB_VERSION}-${{ matrix.target }}" "ghcr.io/${{ github.repository_owner }}/humhub-${{ matrix.target }}:${HUMHUB_VERSION}"
+        docker tag "ghcr.io/${{ github.repository_owner }}/humhub:temp-${{ github.run_id }}-${HUMHUB_VERSION}-${{ matrix.target }}" "ghcr.io/${{ github.repository_owner }}/humhub-${{ matrix.target }}:${HUMHUB_VERSION}"
         docker push "ghcr.io/${{ github.repository_owner }}/humhub-${{ matrix.target }}:${HUMHUB_VERSION}"
         
